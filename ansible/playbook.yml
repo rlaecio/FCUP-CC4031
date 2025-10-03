@@ -1,0 +1,37 @@
+---
+- name: Configurar Fedora e Kali
+  hosts: all
+  become: true
+  tasks:
+    - name: Atualizar Fedora
+      dnf:
+        name: "*"
+        state: latest
+      when: ansible_distribution == "Fedora"
+
+    - name: Atualizar Kali
+      apt:
+        update_cache: yes
+        upgrade: dist
+      when: ansible_distribution == "Kali"
+
+    - name: Criar utilizador "auser"
+      user:
+        name: auser
+        password: "{{ 'horseCACAnow' | password_hash('sha512') }}"
+        shell: /bin/bash
+        state: present
+
+    - name: Adicionar auser ao grupo sudo no Kali
+      user:
+        name: auser
+        groups: sudo
+        append: yes
+      when: ansible_distribution == "Kali"
+
+    - name: Adicionar auser ao grupo wheel no Fedora
+      user:
+        name: auser
+        groups: wheel
+        append: yes
+      when: ansible_distribution == "Fedora"
