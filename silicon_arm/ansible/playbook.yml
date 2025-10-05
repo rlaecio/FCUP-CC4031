@@ -1,0 +1,63 @@
+---
+- name: Configurar Rocky Server
+  hosts: rocky_server
+  become: true
+  tasks:
+    - name: Atualizar pacotes
+      dnf:
+        name: "*"
+        state: latest
+
+    - name: Instalar pacotes básicos
+      dnf:
+        name:
+          - vim
+          - curl
+          - net-tools
+          - firewalld
+        state: present
+
+    - name: Criar utilizador "auser"
+      user:
+        name: auser
+        password: "{{ 'horseCACAnow' | password_hash('sha512') }}"
+        groups: wheel
+        append: yes
+
+- name: Configurar Rocky Desktop
+  hosts: rocky_desktop
+  become: true
+  tasks:
+    - name: Atualizar pacotes
+      dnf:
+        name: "*"
+        state: latest
+
+    - name: Instalar ambiente gráfico
+      dnf:
+        name:
+          - @workstation-product-environment
+        state: present
+
+    - name: Criar utilizador "auser"
+      user:
+        name: auser
+        password: "{{ 'horseCACAnow' | password_hash('sha512') }}"
+        groups: wheel
+        append: yes
+
+- name: Configurar Kali Linux
+  hosts: kali
+  become: true
+  tasks:
+    - name: Atualizar pacotes
+      apt:
+        update_cache: yes
+        upgrade: dist
+
+    - name: Criar utilizador "auser"
+      user:
+        name: auser
+        password: "{{ 'horseCACAnow' | password_hash('sha512') }}"
+        groups: sudo
+        append: yes
