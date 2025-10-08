@@ -15,5 +15,3 @@ For x86 and AMD Architectury
 
     vagrant up
 
-
-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
