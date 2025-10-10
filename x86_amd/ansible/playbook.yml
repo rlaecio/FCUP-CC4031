@@ -1,4 +1,3 @@
----
 - name: Configurar Fedora Servers
   hosts: fedora_servers
   become: true
@@ -21,8 +20,6 @@
         groups: wheel
         append: yes
 
----
-
 - name: Configurar Fedora Desktops
   hosts: fedora_desktops
   become: true
@@ -44,8 +41,6 @@
         name: auser
         groups: wheel
         append: yes
-
----
 
 - name: Configurar Kali
   hosts: kali_machines
