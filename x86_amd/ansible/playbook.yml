@@ -1,9 +1,9 @@
 ---
-- name: Configurar Fedora Server
-  hosts: fedora_server
+- name: Configurar Fedora Servers
+  hosts: fedora_servers
   become: true
   tasks:
-    - name: Atualizar pacotes do Fedora Server
+    - name: Atualizar Fedora
       dnf:
         name: "*"
         state: latest
@@ -21,11 +21,13 @@
         groups: wheel
         append: yes
 
-- name: Configurar Fedora Desktop
-  hosts: fedora_desktop
+---
+
+- name: Configurar Fedora Desktops
+  hosts: fedora_desktops
   become: true
   tasks:
-    - name: Atualizar pacotes do Fedora Desktop
+    - name: Atualizar Fedora
       dnf:
         name: "*"
         state: latest
@@ -42,12 +44,14 @@
         name: auser
         groups: wheel
         append: yes
+
+---
 
 - name: Configurar Kali
-  hosts: kali
+  hosts: kali_machines
   become: true
   tasks:
-    - name: Atualizar pacotes do Kali
+    - name: Atualizar Kali
       apt:
         update_cache: yes
         upgrade: dist
