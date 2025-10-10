@@ -1,19 +1,12 @@
 ---
-- name: Configurar Fedora e Kali
-  hosts: all
+- name: Configurar Fedora Server
+  hosts: fedora_server
   become: true
   tasks:
-    - name: Atualizar Fedora
+    - name: Atualizar pacotes do Fedora Server
       dnf:
         name: "*"
         state: latest
-      when: ansible_distribution == "Fedora"
-
-    - name: Atualizar Kali
-      apt:
-        update_cache: yes
-        upgrade: dist
-      when: ansible_distribution == "Kali"
 
     - name: Criar utilizador "auser"
       user:
@@ -22,16 +15,52 @@
         shell: /bin/bash
         state: present
 
-    - name: Adicionar auser ao grupo sudo no Kali
-      user:
-        name: auser
-        groups: sudo
-        append: yes
-      when: ansible_distribution == "Kali"
-
-    - name: Adicionar auser ao grupo wheel no Fedora
+    - name: Adicionar auser ao grupo wheel
       user:
         name: auser
         groups: wheel
         append: yes
-      when: ansible_distribution == "Fedora"
+
+- name: Configurar Fedora Desktop
+  hosts: fedora_desktop
+  become: true
+  tasks:
+    - name: Atualizar pacotes do Fedora Desktop
+      dnf:
+        name: "*"
+        state: latest
+
+    - name: Criar utilizador "auser"
+      user:
+        name: auser
+        password: "{{ 'horseCACAnow' | password_hash('sha512') }}"
+        shell: /bin/bash
+        state: present
+
+    - name: Adicionar auser ao grupo wheel
+      user:
+        name: auser
+        groups: wheel
+        append: yes
+
+- name: Configurar Kali
+  hosts: kali
+  become: true
+  tasks:
+    - name: Atualizar pacotes do Kali
+      apt:
+        update_cache: yes
+        upgrade: dist
+
+    - name: Criar utilizador "auser"
+      user:
+        name: auser
+        password: "{{ 'horseCACAnow' | password_hash('sha512') }}"
+        shell: /bin/bash
+        state: present
+
+    - name: Adicionar auser ao grupo sudo
+      user:
+        name: auser
+        groups: sudo
+        append: yes
