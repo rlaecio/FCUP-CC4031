@@ -1,3 +1,57 @@
+- name: Configurar Fedora Gateway
+  hosts: gateway
+  become: true
+  tasks:
+    - name: Atualizar Fedora
+      dnf:
+        name: "*"
+        state: latest
+
+    - name: Criar utilizador "auser"
+      user:
+        name: auser
+        password: "{{ 'horseCACAnow' | password_hash('sha512') }}"
+        shell: /bin/bash
+        state: present
+
+    - name: Adicionar auser ao grupo wheel
+      user:
+        name: auser
+        groups: wheel
+        append: yes
+        
+
+    - name: Ativar roteamento IPv4
+      sysctl:
+        name: net.ipv4.ip_forward
+        value: '1'
+        state: present
+        sysctl_set: yes
+        reload: yes
+
+    - name: Instalar firewalld
+      package:
+        name: firewalld
+        state: present
+
+    - name: Habilitar e iniciar firewalld
+      service:
+        name: firewalld
+        state: started
+        enabled: true
+
+    - name: Ativar mascaramento NAT
+      firewalld:
+        masquerade: yes
+        zone: public
+        permanent: yes
+        state: enabled
+        immediate: yes
+
+    - name: Recarregar firewalld
+      command: firewall-cmd --reload
+
+
 - name: Configurar Fedora Servers
   hosts: fedora_servers
   become: true
