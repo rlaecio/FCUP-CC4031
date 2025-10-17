@@ -1,5 +1,15 @@
+---
+# Bootstrap Fedora (Python/libdnf5) necessário para módulos dnf
+- name: Preparar Fedora para Ansible
+  hosts: fedora_gateway:fedora_servers:fedora_desktops
+  become: true
+  tasks:
+    - name: Instalar Python 3 e libdnf5 via raw
+      raw: dnf install -y python3 python3-libdnf5
+
+# Configuração Fedora Gateway
 - name: Configurar Fedora Gateway
-  hosts: gateway
+  hosts: fedora_gateway
   become: true
   tasks:
     - name: Atualizar Fedora
@@ -10,48 +20,13 @@
     - name: Criar utilizador "auser"
       user:
         name: auser
-        password: "{{ 'horseCACAnow' | password_hash('sha512') }}"
+        password: "horseCACAnow"
         shell: /bin/bash
-        state: present
-
-    - name: Adicionar auser ao grupo wheel
-      user:
-        name: auser
         groups: wheel
         append: yes
-        
+        update_password: always
 
-    - name: Ativar roteamento IPv4
-      sysctl:
-        name: net.ipv4.ip_forward
-        value: '1'
-        state: present
-        sysctl_set: yes
-        reload: yes
-
-    - name: Instalar firewalld
-      package:
-        name: firewalld
-        state: present
-
-    - name: Habilitar e iniciar firewalld
-      service:
-        name: firewalld
-        state: started
-        enabled: true
-
-    - name: Ativar mascaramento NAT
-      firewalld:
-        masquerade: yes
-        zone: public
-        permanent: yes
-        state: enabled
-        immediate: yes
-
-    - name: Recarregar firewalld
-      command: firewall-cmd --reload
-
-
+# Configuração Fedora Servers
 - name: Configurar Fedora Servers
   hosts: fedora_servers
   become: true
@@ -64,16 +39,13 @@
     - name: Criar utilizador "auser"
       user:
         name: auser
-        password: "{{ 'horseCACAnow' | password_hash('sha512') }}"
+        password: "horseCACAnow"
         shell: /bin/bash
-        state: present
-
-    - name: Adicionar auser ao grupo wheel
-      user:
-        name: auser
         groups: wheel
         append: yes
+        update_password: always
 
+# Configuração Fedora Desktops
 - name: Configurar Fedora Desktops
   hosts: fedora_desktops
   become: true
@@ -86,16 +58,13 @@
     - name: Criar utilizador "auser"
       user:
         name: auser
-        password: "{{ 'horseCACAnow' | password_hash('sha512') }}"
+        password: "horseCACAnow"
         shell: /bin/bash
-        state: present
-
-    - name: Adicionar auser ao grupo wheel
-      user:
-        name: auser
         groups: wheel
         append: yes
+        update_password: always
 
+# Configuração Kali
 - name: Configurar Kali
   hosts: kali_machines
   become: true
@@ -108,12 +77,8 @@
     - name: Criar utilizador "auser"
       user:
         name: auser
-        password: "{{ 'horseCACAnow' | password_hash('sha512') }}"
+        password: "horseCACAnow"
         shell: /bin/bash
-        state: present
-
-    - name: Adicionar auser ao grupo sudo
-      user:
-        name: auser
         groups: sudo
         append: yes
+        update_password: always
